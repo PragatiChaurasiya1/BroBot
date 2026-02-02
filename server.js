@@ -1,19 +1,26 @@
 const express = require("express");
 const cors = require("cors");
 const dotenv = require("dotenv");
+const path = require("path");
 
 dotenv.config();
 
 const app = express();
+
+/* ---------- MIDDLEWARE ---------- */
 app.use(cors());
 app.use(express.json());
 
-// Test route
+/* ---------- SERVE FRONTEND ---------- */
+// Serve static files (index.html, app.js, style.css)
+app.use(express.static(__dirname));
+
+// Root route → loads frontend UI
 app.get("/", (req, res) => {
-  res.send("Backend is running");
+  res.sendFile(path.join(__dirname, "index.html"));
 });
 
-// Chat route
+/* ---------- CHAT API ---------- */
 app.post("/chat", (req, res) => {
   try {
     const question = (req.body.question || "").toLowerCase();
@@ -54,9 +61,9 @@ app.post("/chat", (req, res) => {
   }
 });
 
+/* ---------- START SERVER ---------- */
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
-  console.log(`Backend running on port ${PORT}`);
+  console.log(`BroBot running on port ${PORT}`);
 });
-
