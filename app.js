@@ -2,11 +2,11 @@ let hasSpoken = false;
 const talkBtn = document.getElementById("talkBtn");
 const conversation = document.getElementById("conversation");
 
+/* ---------- SPEECH RECOGNITION SETUP ---------- */
 const SpeechRecognition =
   window.SpeechRecognition || window.webkitSpeechRecognition;
 
 const recognition = new SpeechRecognition();
-
 recognition.lang = "en-US";
 recognition.interimResults = true;
 recognition.maxAlternatives = 1;
@@ -17,6 +17,7 @@ let retryCount = 0;
 let speechTimeout = null;
 let lastTranscript = "";
 
+/* ---------- BUTTON CLICK ---------- */
 talkBtn.addEventListener("click", () => {
   if (isListening) return;
   startListening();
@@ -29,112 +30,78 @@ function startListening() {
   talkBtn.innerText = "Listening…";
   talkBtn.className = "listening";
 
-  setTimeout(() => {
-    recognition.start();
-  }, 300);
+  setTimeout(() => recognition.start(), 300);
 }
-
 
 recognition.onstart = () => {
   console.log("Mic listening started");
 };
 
+/* ---------- SPEECH RESULT ---------- */
 recognition.onresult = async (event) => {
   hasSpoken = true;
   retryCount = 0;
 
-  const userText = event.results[event.results.length - 1][0].transcript.trim();
-  const isFinal = event.results[event.results.length - 1].isFinal;
+  const result = event.results[event.results.length - 1];
+  const userText = result[0].transcript.trim();
+  const isFinal = result.isFinal;
 
-  // Clear previous timeout
-  if (speechTimeout) {
-    clearTimeout(speechTimeout);
-  }
+  if (speechTimeout) clearTimeout(speechTimeout);
 
-  // If we have at least one word, wait for 2 seconds for more
-  if (userText.split(' ').length >= 1 && !isFinal) {
+  // Wait briefly for more words
+  if (!isFinal) {
     lastTranscript = userText;
-    
     speechTimeout = setTimeout(() => {
-      // After 2 seconds, check if we have enough to process
-      if (lastTranscript.split(' ').length < 2) {
-        console.log("Discarded short input:", lastTranscript);
-        lastTranscript = "";
-        return;
+      if (lastTranscript.split(" ").length >= 2) {
+        processUserInput(lastTranscript);
       }
-      processUserInput(lastTranscript);
+      lastTranscript = "";
     }, 2000);
     return;
   }
 
-  // If it's a final result, process immediately if it has keywords
-  if (isFinal && userText.length > 0) {
-    clearTimeout(speechTimeout);
-    const words = userText.toLowerCase();
-    
-    // Check if any keyword exists
-    if (words.includes("life") || words.includes("superpower") || 
-        words.includes("grow") || words.includes("misconception") || 
-        words.includes("boundary") || words.includes("limit")) {
-      processUserInput(userText);
-    } else {
-      lastTranscript = userText;
-    }
+  // Final result
+  if (isFinal && userText.length > 2) {
+    processUserInput(userText);
   }
 };
 
+/* ---------- PROCESS INPUT ---------- */
 async function processUserInput(text) {
-  if (!text || text.length < 3) return;
-  
+  if (!text) return;
+
   appendText("You", text);
-  
+
   talkBtn.innerText = "Thinking…";
   talkBtn.className = "thinking";
-  
+
   await getBotResponse(text);
-  
+
   lastTranscript = "";
   resetButton();
 }
 
-
+/* ---------- ERROR HANDLING ---------- */
 recognition.onerror = (event) => {
   console.log("Speech error:", event.error);
 
   if (!hasSpoken && retryCount < 1) {
     retryCount++;
-    console.log("Retrying... (" + retryCount + "/1)");
-    setTimeout(() => {
-      if (!isListening) {
-        startListening();
-      }
-    }, 500);
+    setTimeout(startListening, 500);
     return;
   }
 
-  if (!hasSpoken) {
-    resetButton();
-    retryCount = 0;
-    return;
-  }
-
-  speak("I didn't catch that. You can try asking again.");
+  speak("I didn't catch that. Please try again.");
   resetButton();
-  retryCount = 0;
 };
 
 recognition.onend = () => {
   isListening = false;
-  
-  if (speechTimeout) {
-    clearTimeout(speechTimeout);
-  }
-
-  if (!hasSpoken) {
-    resetButton();
-  }
+  if (speechTimeout) clearTimeout(speechTimeout);
+  resetButton();
 };
 
+/* ---------- UI HELPERS ---------- */
 function resetButton() {
   talkBtn.innerText = "Start talking";
   talkBtn.className = "";
@@ -144,27 +111,28 @@ function appendText(speaker, text) {
   conversation.innerText += `${speaker}: ${text}\n\n`;
 }
 
+/* ---------- BACKEND CALL ---------- */
 async function getBotResponse(question) {
   try {
-    const res = await fetch("https://brobot-backend.onrender.com/chat", {
+    const res = await fetch("/chat", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ question }),
+      body: JSON.stringify({ question })
     });
 
     const data = await res.json();
     speak(data.answer);
-    appendText("Me", data.answer);
-  } catch {
+    appendText("Bot", data.answer);
+  } catch (error) {
     speak("Something went wrong. Please try again.");
+    console.error(error);
   }
 }
 
+/* ---------- TEXT TO SPEECH ---------- */
 function speak(text) {
   const utterance = new SpeechSynthesisUtterance(text);
   utterance.rate = 0.95;
   utterance.pitch = 1;
   speechSynthesis.speak(utterance);
 }
-
-
