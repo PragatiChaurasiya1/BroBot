@@ -22,14 +22,35 @@
 
 **BroBot** is an innovative voice-enabled chatbot designed to help job seekers practice and improve their interview skills through natural conversation. By leveraging AI technology and voice interaction, BroBot provides a low-pressure environment where users can rehearse answering common interview questions, receive feedback, and build confidence before facing real interviews.
 
+**Current Implementation:** BroBot uses ChatGPT's API to respond to personal and professional development questions as YOU would answer them. The bot is designed to be universally user-friendly, requiring no coding knowledge or API key entry from users.
+
 ### ✨ Key Features
 
 - 🎤 **Voice Interaction** - Natural speech-to-text and text-to-speech capabilities
-- 💬 **Conversational AI** - Intelligent responses powered by AI
-- 🎯 **Interview Practice** - Practice answering questions about background, strengths, and challenges
+- 💬 **Conversational AI** - Intelligent responses powered by AI (using ChatGPT API)
+- 🎯 **Interview Practice** - Currently answers questions such as:
+  - What should we know about your life story in a few sentences?
+  - What's your #1 superpower?
+  - What are the top 3 areas you'd like to grow in?
+  - What misconception do your coworkers have about you?
+  - How do you push your boundaries and limits?
 - 🌐 **Web-Based** - No installation required, accessible from any browser
 - 📱 **Responsive Design** - Works seamlessly on desktop and mobile devices
 - 🚀 **Real-Time Processing** - Instant feedback and responses
+- 👤 **User-Friendly** - Simple setup with no coding knowledge or complex installations required
+
+---
+
+## 🔧 Technical Implementation
+
+BroBot leverages the following technologies and APIs:
+
+- **ChatGPT API** - Powers the conversational AI responses
+- **Web Speech API** - Enables voice recognition and text-to-speech
+- **Express.js** - Handles server-side routing and API integration
+- **Vanilla JavaScript** - Client-side interaction and real-time processing
+
+The application is designed with simplicity in mind - users don't need to enter API keys or have technical knowledge to use the chatbot.
 
 ---
 
@@ -123,12 +144,20 @@ Navigate to `http://localhost:3000` (or the port specified in your server config
    - Grant microphone permissions when prompted
 
 3. **Practice Your Responses**
-   - Speak naturally about your background, strengths, or challenges
-   - BroBot will listen and respond with relevant follow-up questions
+   - Ask BroBot questions about your background, strengths, or areas for growth
+   - Speak naturally - the bot currently responds to questions like:
+     - "What should we know about your life story?"
+     - "What's your #1 superpower?"
+     - "What are the top 3 areas you'd like to grow in?"
+     - "What misconception do your coworkers have about you?"
+     - "How do you push your boundaries and limits?"
+   - BroBot will provide thoughtful responses as you would answer them
 
 4. **Build Confidence**
    - Practice as many times as you need
    - Refine your answers and delivery
+
+> **Note:** The bot is designed to answer questions AS YOU, helping you practice how you might respond in real interview scenarios.
 
 ---
 
