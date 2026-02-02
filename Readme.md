@@ -136,7 +136,7 @@ Navigate to `http://localhost:3000` (or the port specified in your server config
 ## 💻 Usage
 
 1. **Visit the Application**
-   - Open [https://brobot-e9fu.onrender.com/](https://brobot-e9fu.onrender.com/) in your browser
+   - Open [https://brobot-e9fu.onrender.com/](https://brobot-e9fu.onrender.com/) in your Chrome browser
    - Or run locally at `http://localhost:3000`
 
 2. **Start Talking**
@@ -222,12 +222,6 @@ Contributions are what make the open-source community such an amazing place to l
 - [ ] Integration with video analysis for body language feedback
 - [ ] User authentication and progress tracking
 - [ ] Custom interview question sets
-
----
-
-## 📝 License
-
-This project is open source and available under the [MIT License](LICENSE).
 
 ---
 
